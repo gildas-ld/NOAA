@@ -1,0 +1,22 @@
+$font-styles: (
+  brands: 400,
+  duotone: 900,
+  light: 300,
+  regular: 400,
+  solid: 900,
+  thin: 100
+);
+$format-names: (ttf, woff, woff2);
+
+@each $style, $weight in $font-styles {
+  @font-face {
+    font-family: if($style == duotone, 'Font Awesome 6 Duotone', 'Font Awesome 6 Pro');
+    font-style: normal;
+    font-weight: $weight;
+    font-display: block;
+    src: 
+      url('../fonts/font_awesome--webfonts/fa-#{$style}-#{$weight}.woff2') format('woff2'),
+      url('../fonts/font_awesome--webfonts/fa-#{$style}-#{$weight}.woff') format('woff'),
+      url('../fonts/font_awesome--webfonts/fa-#{$style}-#{$weight}.ttf') format('truetype');
+  }
+}
