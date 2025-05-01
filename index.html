@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+    <title>NOAA - Gildas</title>
+
+    <!-- Feuilles de style CSS -->
+    <link
+        rel="stylesheet"
+        href="assets/css/bootstrap.min.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/leaflet.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/flatpickr.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/L.Control.MousePosition.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/L.Control.ZoomMin.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/L.Control.Zoomslider.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/L.Control.Locate.min.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/leaflet.fullscreen.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/all.min.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/FontAwesome.css"
+    />
+    <link
+        rel="stylesheet"
+        href="assets/css/main.css"
+    />
+</head>
+
+<body>
+
+    <body>
+        <div class="container-fluid">
+            <h2
+                class="text-center"
+                data-bs-content="Trouvez le lever et le coucher du soleil, le midi solaire et la position du soleil pour n'importe quel endroit de la Terre."
+                data-bs-toggle="popover"
+                data-bs-trigger="hover focus"
+                style="padding-top: 40px;"
+                tabindex="0"
+                title=""
+            >
+                Calculateur des heures solaires et autres données astronomiques</h2>
+            <h3 class="text-center"></h3>
+            <div class="row center mt-2 mx-lg-5">
+                <div class="col">
+                    <label class="text-nowrap">
+                        <input
+                            checked
+                            id="showworld"
+                            name="showpins"
+                            type="radio"
+                            value="World"
+                        />
+                        <span class="larger purple"> Villes du monde</span>
+                    </label>
+                </div>
+                <div class="col">
+                    <label class="text-nowrap">
+                        <input
+                            checked
+                            id="showFranceCities"
+                            name="showpins"
+                            type="radio"
+                            value="FranceCities"
+                        />
+                        <span class="larger purple"> Villes de France</span>
+                    </label>
+                </div>
+                <div class="col"><label class="text-nowrap"> <input
+                            id="showus"
+                            name="showpins"
+                            type="radio"
+                            value="US"
+                        /><span class="larger bold blue"> Villes U.S.A.</span> </label></div>
+                <div class="col"><label class="text-nowrap"> <input
+                            id="showobs"
+                            name="showpins"
+                            type="radio"
+                            value="Obs"
+                        /><span class="larger bold gray"> Observatoires GML</span> </label></div>
+                <div class="col"><label class="text-nowrap"> <input
+                            id="showdata"
+                            name="showpins"
+                            type="radio"
+                            value="Site"
+                        /><span class="larger bold lightgreen"> Données GML</span>
+                    </label></div>
+                <div class="col"><label class="text-nowrap"> <input
+                            id="showsurf"
+                            name="showpins"
+                            type="radio"
+                            value="Surfrad"
+                        /><span class="larger bold lightred"> SurfRad &amp; Solrad</span>
+                    </label></div>
+            </div>
+            <div class="figure-caption mt-2"> Déplacez l'épingle rouge à l'endroit souhaité et saisissez la date et
+                l'heure
+                auxquelles vous souhaitez calculer la position du soleil.
+            </div>
+            <div
+                class="mt-1"
+                id="map_canvas"
+                style="border: 1px solid #aaa; height: 500px; margin: auto; width: 100% ; border-radius: 10px;"
+            ></div>
+            <br />
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="border rounded gray-bg p-3">
+                        <div class="row text-nowrap">
+                            <b style="padding-left: 0.4em;">Emplacement :</b>
+                            <div class="col-sm-3 px-sm-1">
+                                <div class="form-group"><label for="latbox">Latitude :</label> <i
+                                        class="fad fa-arrows-v"
+                                        data-bs-content="La latitude est une coordonnée géographique représentée par une valeur angulaire, expression de la position d'un point sur Terre (ou sur une autre planète), au nord ou au sud de l'équateur qui est le plan de référence."
+                                        data-bs-toggle="popover"
+                                        data-bs-trigger="hover focus"
+                                        tabindex="0"
+                                        title="En degrés : φ&deg;"
+                                    > </i>
+                                    <input
+                                        class="form-control latbox"
+                                        id="latbox"
+                                        type="text"
+                                        value="48.856667"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-sm-3 px-sm-1">
+                                <div class="form-group"><label for="lngbox">Longitude :</label> <i
+                                        class="fad fa-arrows-h"
+                                        data-bs-content="La longitude est une coordonnée géographique représentée par une valeur angulaire, expression du positionnement est-ouest d'un point sur Terre (ou sur une autre sphère). La longitude de référence sur Terre est le méridien de Greenwich en Angleterre."
+                                        data-bs-toggle="popover"
+                                        data-bs-trigger="hover focus"
+                                        tabindex="0"
+                                        title="En degrés : φ&deg;"
+                                    > </i><input
+                                        class="form-control lngbox"
+                                        id="lngbox"
+                                        type="text"
+                                        value="2.342222"
+                                        48.856667
+                                        2.342222
+                                    /></div>
+                            </div>
+                            <div class="col-sm-6 px-sm-1">
+                                <div class="form-group">
+                                    <label for="tz">Fuseau horaire :</label> <i
+                                        class="fad fa-globe-stand"
+                                        data-bs-content="Un fuseau horaire est une zone de la surface terrestre qui observe une heure uniforme en tout lieu."
+                                        data-bs-toggle="popover"
+                                        data-bs-trigger="hover focus"
+                                        tabindex="0"
+                                        title=""
+                                    > </i>
+                                    <input
+                                        class="form-control tzo"
+                                        id="tz"
+                                        name="fromzone"
+                                        readonly="readonly"
+                                    >
+
+                                    <div
+                                        class="tzo "
+                                        style="padding-left: 1em; padding-top : .5em;"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 px-sm-1 order-sm-2"><label for="zonebox">Décalage UTC : </label> <i
+                                    class="fad fa-ruler-horizontal"
+                                    data-bs-content="Le décalage UTC est automatiquement déterminé lorsque cela est possible, en fonction du fuseau horaire et de la date donnés. L'utilisateur peut remplacer manuellement cette valeur en la saisissant ici après avoir défini l'emplacement, le fuseau horaire et la date."
+                                    data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    tabindex="0"
+                                    title="En heures, minutes "
+                                >
+                                </i><input
+                                    class="form-control"
+                                    id="zonebox"
+                                    type="text"
+                                /></div>
+                            <div class="col-sm-6 px-sm-1 mt-3 order-sm-1"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mt-4 mt-lg-0">
+                    <div class="border rounded gray-bg p-3">
+                        <div class="row">
+                            <div class="col">
+                                <b>Date :</b> <label for="flatpickr"></label>
+                                <input
+                                    class="form-control flatpickr_css"
+                                    id="flatpickr"
+                                    style="background-color: #ffffff;"
+                                    type="text"
+                                />
+                             </div>
+                            <div class="row">
+                                <div class="col pt-3">
+                                    <div class="form-group">
+                                        Lever : <i
+                                            class="fad fa-sunrise"
+                                            style="margin-right: 1em;"
+                                            tabindex="0"
+                                        > </i><input
+                                            checked
+                                            id="showsr"
+                                            name="srshow"
+                                            type="checkbox"
+                                        />
+                                        <div class="mb-2"></div>
+                                        <input
+                                            class="form-control"
+                                            id="risebox"
+                                            name="sunrise"
+                                            readonly
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col pt-3">
+                                    <div class="form-group">
+                                        Coucher : <i
+                                            class="fad fad fa-sunset"
+                                            style="margin-right: 1em;"
+                                            tabindex="0"
+                                        > </i><input
+                                            checked
+                                            class="mb-0"
+                                            id="showss"
+                                            name="ssshow"
+                                            type="checkbox"
+                                        />
+                                        <div class="mb-2"></div>
+                                        <input
+                                            class="form-control"
+                                            id="setbox"
+                                            name="sunset"
+                                            readonly
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 pt-2">
+                                <div class="form-group">
+                                    <label for="daybox">Jour : </label>
+                                    <select
+                                        class="form-control"
+                                        id="daybox"
+                                        name="day"
+                                    >
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                        <option>9</option>
+                                        <option>10</option>
+                                        <option>11</option>
+                                        <option>12</option>
+                                        <option>13</option>
+                                        <option>14</option>
+                                        <option>15</option>
+                                        <option>16</option>
+                                        <option>17</option>
+                                        <option>18</option>
+                                        <option>19</option>
+                                        <option>20</option>
+                                        <option>21</option>
+                                        <option>22</option>
+                                        <option>23</option>
+                                        <option>24</option>
+                                        <option>25</option>
+                                        <option>26</option>
+                                        <option>27</option>
+                                        <option>28</option>
+                                        <option>29</option>
+                                        <option>30</option>
+                                        <option>31</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 pt-2">
+                                <div class="form-group">
+                                    <label for="mosbox">Mois : </label>
+                                    <select
+                                        class="form-control"
+                                        id="mosbox"
+                                        name="mos"
+                                    >
+                                        <option value="1">Janvier</option>
+                                        <option value="2">Février</option>
+                                        <option value="3">Mars</option>
+                                        <option value="4">Avril</option>
+                                        <option value="5">Mai</option>
+                                        <option value="6">Juin</option>
+                                        <option value="7">Juillet</option>
+                                        <option value="8">Août</option>
+                                        <option value="9">Septembre</option>
+                                        <option value="10">Octobre</option>
+                                        <option value="11">Novembre</option>
+                                        <option value="12">Décembre</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 pt-2">
+                                <div class="form-group"><label for="yearbox">Année : </label> <input
+                                        class="form-control"
+                                        id="yearbox"
+                                        maxlength="4"
+                                        name="year"
+                                        type="text"
+                                        value="2021"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group text-nowrap">
+                            <label
+                                class="pt-2 "
+                                for="hrbox"
+                            >Temps local : </label>
+                            <div class="row g-2"><input
+                                    class="form-control col mx-1"
+                                    id="hrbox"
+                                    name="hour"
+                                    type="text"
+                                    value="15"
+                                />
+                                <label
+                                    class="sr-only"
+                                    for="mnbox"
+                                >Minute</label> <input
+                                    class="form-control col mx-1"
+                                    id="mnbox"
+                                    name="mins"
+                                    type="text"
+                                    value="20"
+                                />
+                                <label
+                                    class="sr-only"
+                                    for="scbox"
+                                >Secondes</label>
+                                <input
+                                    class="form-control col mx-1"
+                                    id="scbox"
+                                    name="secs"
+                                    type="text"
+                                    value="30"
+                                />
+                            </div>
+                            <label
+                                hidden
+                                class="mt-3"
+                            > <input
+                                    id="pmbox"
+                                    name="pm"
+                                    type="checkbox"
+                                    hidden
+                                />&nbsp; PM </label>
+                            <!-- <button class="btn btn-outline-success m-3" id="currtime" name="currtime" type="submit"> Utiliser
+                      l'heure
+                      actuelle
+                    </button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="border rounded gray-bg p-3 mb-3">
+                <b>Résultats :</b>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group"><label
+                                class="mb-2 pt-2"
+                                for="eqtbox"
+                            >Eq. du Temps :&nbsp;</label><i
+                                class="fad fa-hourglass-half "
+                                data-bs-content="L’équation du temps est un paramètre utilisé en astronomie pour rendre compte du mouvement apparent relatif du Soleil par rapport au soleil moyen, lesquels peuvent différer l'un par rapport à l'autre de plus ou moins un quart d'heure environ. D'une année sur l'autre, la courbe d'évolution annuelle de ce paramètre se répète quasiment à l'identique. La connaissance de l'équation du temps donne le moyen de corriger à tout instant l'heure donnée par un cadran solaire pour trouver l'heure légale."
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                tabindex="0"
+                                title="En minutes"
+                            > </i><input
+                                class="form-control"
+                                id="eqtbox"
+                                name="eqTime"
+                                readonly
+                                data-bs-content="L’équation du temps est un paramètre utilisé en astronomie pour rendre compte du mouvement apparent relatif du Soleil par rapport au soleil moyen, lesquels peuvent différer l'un par rapport à l'autre de plus ou moins un quart d'heure environ. D'une année sur l'autre, la courbe d'évolution annuelle de ce paramètre se répète quasiment à l'identique. La connaissance de l'équation du temps donne le moyen de corriger à tout instant l'heure donnée par un cadran solaire pour trouver l'heure légale."
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                type="text"
+                                title="En minutes"
+                            /></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group text-nowrap"><label
+                                class="mb-2 pt-2"
+                                for="sdbox"
+                            >Décl. du soleil :</label> <i
+                                class="fad fa-sun"
+                                data-bs-content="La déclinaison du Soleil, δ ☉, est l'angle entre les rayons du Soleil et le plan de l'équateur terrestre. L'inclinaison axiale de la Terre (appelée obliquité de l'écliptique par les astronomes) est l'angle entre l'axe de la Terre et une ligne perpendiculaire à l'orbite de la Terre. L'inclinaison axiale de la Terre change lentement au cours des milliers d'années, mais sa valeur actuelle d'environ ε = 23&deg; 26' est presque constante, de sorte que le changement de déclinaison solaire au cours d'une année est presque le même que l'année suivante. "
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                tabindex="0"
+                                title="Déclinaison du soleil"
+                            > </i>
+                            <i
+                                class="fad fa-ruler-triangle "
+                                data-bs-content="L'angle entre les rayons du Soleil et le plan de l'équateur terrestre. L'inclinaison axiale de la Terre (appelée obliquité de l'écliptique par les astronomes) est l'angle entre l'axe de la Terre et une ligne perpendiculaire à l'orbite de la Terre. L'inclinaison axiale de la Terre change lentement au cours des milliers d'années, mais sa valeur actuelle d'environ ε = 23&deg; 26' est presque constante, de sorte que le changement de déclinaison solaire au cours d'une année est presque le même que l'année suivante. "
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                tabindex="0"
+                                title="Déclinaison du soleil"
+                            > </i><input
+                                class="form-control"
+                                id="sdbox"
+                                name="solarDec"
+                                readonly
+                                type="text"
+                                data-bs-content="L'angle entre les rayons du Soleil et le plan de l'équateur terrestre. L'inclinaison axiale de la Terre (appelée obliquité de l'écliptique par les astronomes) est l'angle entre l'axe de la Terre et une ligne perpendiculaire à l'orbite de la Terre. L'inclinaison axiale de la Terre change lentement au cours des milliers d'années, mais sa valeur actuelle d'environ ε = 23&deg; 26' est presque constante, de sorte que le changement de déclinaison solaire au cours d'une année est presque le même que l'année suivante. "
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                title="En (δ &deg;)"
+                            />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group"><label
+                                class="mb-2 pt-2"
+                                for="noonbox"
+                            >Midi Solaire :&nbsp;</label><i
+                                class="fad fa-watch "
+                                data-bs-content="Midi, ou midi solaire (ou midi pile) est l'heure où le soleil est au plus proche du zénith (culmination), à mi-chemin entre l'aube et le crépuscule. C'est le temps opposé au minuit solaire, lorsqu’il se trouve au plus proche du nadir. C'est donc à ce moment que l'ombre d'un objet est la plus courte : elle indique précisément le nord (dans l'hémisphère nord) ou le sud (dans l'hémisphère sud), en dehors des zones équatoriales comprises entre les deux tropiques. "
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                tabindex="0"
+                                title="En heures, minutes, secondes"
+                            >
+                            </i><input
+                                class="form-control"
+                                id="noonbox"
+                                name="solnoon"
+                                readonly
+                                type="text"
+                                data-bs-content="Midi, ou midi solaire (ou midi pile) est l'heure où le soleil est au plus proche du zénith (culmination), à mi-chemin entre l'aube et le crépuscule. C'est le temps opposé au minuit solaire, lorsqu’il se trouve au plus proche du nadir. C'est donc à ce moment que l'ombre d'un objet est la plus courte : elle indique précisément le nord (dans l'hémisphère nord) ou le sud (dans l'hémisphère sud), en dehors des zones équatoriales comprises entre les deux tropiques. "
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                tabindex="0"
+                                title="En heures, minutes, secondes"
+                            /></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group text-nowrap">
+                            <label
+                                class="mb-2 pt-2"
+                                for="azbox"
+                            >Azim. / Élév. :&nbsp;</label><i
+                                class="fad fa-ruler-triangle"
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover focus"
+                                onclick=""
+                                style="margin-right: 1em;"
+                                tabindex="0"
+                            > </i><input
+                                checked
+                                id="showae"
+                                name="aeshow"
+                                type="checkbox"
+                            />
+                            <div class="row">
+                                <div class="col-6 px-lg-1">
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            id="azbox"
+                                            name="az"
+                                            readonly
+                                            type="text"
+                                            title="Azimut"
+                                            data-bs-content="Azimut : C'est l'angle entre la direction du nord et la projection horizontale de la position du soleil. Il est mesuré dans le sens des aiguilles d'une montre à partir du nord. Par exemple, un azimut de 90&deg; indique que le soleil est à l'est, 180&deg; indique le sud, et 270&deg; indique l'ouest."
+                                            data-bs-toggle="popover"
+                                            data-bs-trigger="hover focus"
+                                        />
+                                        <span class="input-group-text">δ</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 px-lg-1">
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            id="elbox"
+                                            name="el"
+                                            readonly
+                                            type="text"
+                                            title="Élévation"
+                                            data-bs-content="Élévation : C'est l'angle entre l'horizon et le soleil. Il mesure la hauteur du soleil dans le ciel. Un angle de 0&deg; signifie que le soleil est à l'horizon, tandis qu'un angle de 90&deg; signifie que le soleil est directement au-dessus, au zénith."
+                                            data-bs-toggle="popover"
+                                            data-bs-trigger="hover focus"
+                                        />
+                                        <span class="input-group-text">δ</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <noscript><b>JavaScript doit être activé pour que vous puissiez utiliser la carte. Cependant, il semble que
+                JavaScript
+                soit désactivé ou non pris en charge par votre navigateur. Pour afficher la carte, activez JavaScript en
+                modifiant
+                les options de votre navigateur, puis réessayez.</b></noscript>
+
+
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/js/flatpickr.min.js"></script>
+        <script src="assets/js/fr.js"></script>
+        <script src="assets/js/moment-with-locales.min.js"></script>
+        <script src="assets/js/moment-timezone-with-data.min.js"></script>
+
+        <!-- Leaflet et ses plugins -->
+        <script src="assets/js/leaflet/leaflet.js"></script>
+        <script src="assets/js/leaflet/esri-leaflet.js"></script>
+        <script src="assets/js/leaflet/Leaflet.Geodesic.js"></script>
+        <script src="assets/js/leaflet/Leaflet.Marker.SlideTo.js"></script>
+        <script src="assets/js/leaflet/Leaflet.fullscreen.js"></script>
+        <script src="assets/js/L.Control.MousePosition.js"></script>
+        <script src="assets/js/L.Control.ZoomMin.js"></script>
+        <script src="assets/js/L.Control.Zoomslider.js"></script>
+        <script src="assets/js/L.Control.Locate.min.js"></script>
+
+        <script src="assets/js/main.js"></script>
+        <script src="assets/js/Flatpick_injection_french.js"></script>
+
+
+    </body>
+
+</html>
